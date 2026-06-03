@@ -1,24 +1,27 @@
-"use client";
+'use client';
 import { useProducts } from "@/context/ProductContext";
 import { ProductCard } from "../components/ProductCard";
 import { Button } from "../components/ui/button";
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
 import { Footer } from "../components/Footer";
+
 export default function HomePage() {
   const { products, loading } = useProducts();
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
-
   const videos = ["/videos/hat.mp4", "/videos/tshirt.mp4", "/videos/DIP.mp4"];
-
-  const videoRefs = videos.map(() => useRef(null));
+  
+  // Create refs properly
+  const videoRefs = useRef<Array<HTMLVideoElement | null>>([]);
 
   useEffect(() => {
+    // Ensure refs array length matches videos
+    videoRefs.current = videoRefs.current.slice(0, videos.length);
     // Play all videos from the start to have them ready
-    videoRefs.forEach((ref) => {
-      if (ref.current) {
-        ref.current.currentTime = 0;
-        ref.current.play().catch(() => {});
+    videoRefs.current.forEach((ref) => {
+      if (ref) {
+        ref.currentTime = 0;
+        ref.play().catch(() => {});
       }
     });
   }, []);
@@ -27,22 +30,17 @@ export default function HomePage() {
     const interval = setInterval(() => {
       setCurrentVideoIndex((prev) => (prev + 1) % videos.length);
     }, 13000); // Change video every 13 seconds
-
     return () => clearInterval(interval);
   }, [videos.length]);
 
-  if (loading)
-    return (
-      <div className="flex justify-center items-center h-64">Loading...</div>
-    );
+  if (loading) return <div className="flex justify-center items-center h-64">Loading...</div>;
 
   return (
     <>
       <section className="relative h-[95vh] min-h-[520px] flex items-center justify-center overflow-hidden bg-black">
-        {/* Video background with smooth transitions */}
         {videos.map((video, index) => (
           <video
-            ref={videoRefs[index]}
+            ref={(el) => { videoRefs.current[index] = el; }}
             key={index}
             autoPlay
             muted
@@ -58,8 +56,6 @@ export default function HomePage() {
             <source src={video.replace(".mov", ".mp4")} type="video/mp4" />
           </video>
         ))}
-
-        {/* Overlays */}
         <div className="absolute inset-0 bg-black/60 z-10" />
         <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(19,19,19,0.5),rgba(7,7,7,0.3))] z-10" />
         <div className="relative z-20 text-center px-6 max-w-4xl">
@@ -184,7 +180,8 @@ export default function HomePage() {
         </div>
       </section>
       <section className="bg-gradient-to-t from-gray-900 to-gray-950 text-white py-20">
-        <Footer></Footer></section>
+        <Footer />
+      </section>
     </>
   );
 }
