@@ -1,0 +1,121 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@import "tailwindcss";
+@import "tailwindcss/theme" layer(theme);
+@import "tailwindcss/preflight" layer(base);
+@import "tailwindcss/utilities" layer(utilities);
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+    
+    /* Red wine (Burgundy) primary */
+    --primary: 340 70% 35%;        /* rich wine red */
+    --primary-foreground: 0 0% 100%;  /* white text */
+    
+    /* Secondary: soft beige/taupe */
+    --secondary: 30 20% 92%;
+    --secondary-foreground: 340 70% 25%;
+    
+    --muted: 240 5% 96%;
+    --muted-foreground: 240 4% 46%;
+    
+    /* Accent matches primary for consistency */
+    --accent: 340 70% 35%;
+    --accent-foreground: 0 0% 100%;
+    
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 6% 90%;
+    --input: 240 6% 90%;
+    --ring: 340 70% 35%;
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    --background: 240 10% 4%;
+    --foreground: 0 0% 98%;
+    --card: 240 10% 6%;
+    --card-foreground: 0 0% 98%;
+    
+    --primary: 340 65% 45%;        /* slightly brighter wine for dark mode visibility */
+    --primary-foreground: 0 0% 100%;
+    
+    --secondary: 240 4% 16%;       /* dark charcoal */
+    --secondary-foreground: 0 0% 98%;
+    
+    --muted: 240 4% 16%;
+    --muted-foreground: 240 5% 65%;
+    
+    --accent: 340 65% 45%;
+    --accent-foreground: 0 0% 100%;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-white/10 backdrop-blur-md border border-white/20 shadow-xl;
+  }
+  .luxury-gradient {
+    @apply bg-gradient-to-br from-rose-50 via-white to-amber-50 dark:from-gray-900 dark:via-gray-900 dark:to-rose-950;
+  }
+}
+
+@keyframes slow-zoom {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.1); }
+}
+.animate-slow-zoom {
+  animation: slow-zoom 20s ease-out forwards;
+}
+html {
+  scroll-behavior: smooth;
+}
+
+/* Override for dropdown menus and select components to be opaque */
+[data-radix-popper-content-wrapper] > div,
+[data-radix-select-content] {
+  background-color: white !important;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+/* In dark mode, those dropdowns need a dark background */
+.dark [data-radix-popper-content-wrapper] > div,
+.dark [data-radix-select-content] {
+  background-color: #1f1f1f !important;
+  border-color: #333;
+}
+
+/* Optional: adjust placeholder images tint */
+.no-image-placeholder {
+  background-color: #e2e8f0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%2394726b' viewBox='0 0 24 24' stroke='%2394726b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M4 16l4-4 4 4 4-4 4 4M4 8h16' /%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 32px;
+}
+
+.active-link {
+  color: hsl(var(--primary)) !important;
+  font-weight: 600;
+  position: relative;
+}
+
+.active-link::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: hsl(var(--primary));
+  border-radius: 9999px;
+}
