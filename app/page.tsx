@@ -39,14 +39,16 @@ export default function HomePage() {
     <>
       <section className="relative h-[95vh] min-h-[520px] flex items-center justify-center overflow-hidden bg-black">
         {videos.map((video, index) => (
+          
           <video
             ref={(el) => { videoRefs.current[index] = el; }}
             key={index}
             autoPlay
             muted
             playsInline
-            loop={true}
-            preload="auto"
+            loop
+            preload="metadata"        // ← تغيير من "auto" إلى "metadata"
+            poster={`/videos/poster-${index}.png`} // ← صورة خفيفة
             className={`absolute inset-0 top-0 left-0 w-full h-full min-w-full min-h-full block object-cover object-center border-none m-0 p-0 will-change-transform transition-opacity duration-1000 ${
               index === currentVideoIndex ? "opacity-100" : "opacity-0"
             }`}
