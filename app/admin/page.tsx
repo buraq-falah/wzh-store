@@ -10,7 +10,7 @@ import { ProductCard } from '../../components/ProductCard';
 import { Product } from '@/types/product';
 
 export default function AdminPage() {
-  const { products, loading, addProduct, updateProduct, deleteProduct } = useProducts();
+  const { products, loading, addProduct, updateProduct, deleteProduct, storeTotalSales } = useProducts();
   const [modalOpen, setModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -58,6 +58,10 @@ export default function AdminPage() {
         </div>
         <Button onClick={handleAdd} className="gap-2"><Plus className="h-4 w-4" /> Add Product</Button>
       </div>
+
+      {/* <div className="mb-6 p-4 bg-muted rounded-lg">
+        <p className="text-lg font-semibold">Store Total Sales: ${storeTotalSales.toFixed(2)}</p>
+      </div> */}
 
       {products.length === 0 ? (
         <div className="text-center py-12 border rounded-lg">

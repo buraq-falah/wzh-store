@@ -1,9 +1,15 @@
-'use client';
+"use client";
 
-import React, { createContext, useContext, useEffect, useState, useRef } from 'react';
-import { strapi, normalizeProduct } from '../../lib/strapi';
-import { Product } from '@/types/product';
-import { toast } from 'sonner';
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useRef,
+} from "react";
+import { strapi, normalizeProduct } from "../../lib/strapi";
+import { Product } from "@/types/product";
+import { toast } from "sonner";
 
 interface ProductContextType {
   products: Product[];
@@ -11,6 +17,7 @@ interface ProductContextType {
   addProduct: (product: any) => Promise<void>;
   updateProduct: (documentId: string, product: any) => Promise<void>;
   deleteProduct: (documentId: string) => Promise<void>;
+  storeTotalSales?: number; // Optional if you want to track total sales across all products
 }
 
 const ProductContext = createContext<ProductContextType | undefined>(undefined);
@@ -19,17 +26,22 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const isAddingRef = useRef(false);
+  const storeTotalSales = products.reduce((total, product) => {
+    return total + (product.details?.totalSales || 0);
+  }, 0);
 
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      const res = await strapi.get('/products?populate=imageUrl'); // تأكد من populate
+      const res = await strapi.get("/products?populate=imageUrl"); // تأكد من populate
       const itemsData = res.data.data || res.data;
-      const items = (Array.isArray(itemsData) ? itemsData : []).map(normalizeProduct);
+      const items = (Array.isArray(itemsData) ? itemsData : []).map(
+        normalizeProduct,
+      );
       setProducts(items);
     } catch (error) {
       console.error(error);
-      toast.error('Failed to load products');
+      toast.error("Failed to load products");
     } finally {
       setLoading(false);
     }
@@ -45,48 +57,62 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
 
     try {
       // أرسل البيانات كما هي (بدون تحويل إضافي)
-      const res = await strapi.post('/products', { data: productData });
+      const res = await strapi.post("/products", { data: productData });
       const newDocumentId = res.data.data.documentId;
 
       // أعد جلب المنتج مع الصور
-      const fetchRes = await strapi.get(`/products/${newDocumentId}?populate=imageUrl`);
+      const fetchRes = await strapi.get(
+        `/products/${newDocumentId}?populate=imageUrl`,
+      );
       const newProduct = normalizeProduct(fetchRes.data.data);
-      setProducts(prev => [...prev, newProduct]);
-      toast.success('Product added successfully');
+      setProducts((prev) => [...prev, newProduct]);
+      toast.success("Product added successfully");
     } catch (error: any) {
-      console.error('Add error:', error.response?.data);
-      toast.error(error.response?.data?.error?.message || 'Failed to add product');
+      console.error("Add error:", error.response?.data);
+      toast.error(
+        error.response?.data?.error?.message || "Failed to add product",
+      );
     } finally {
-      setTimeout(() => { isAddingRef.current = false; }, 500);
+      setTimeout(() => {
+        isAddingRef.current = false;
+      }, 500);
     }
   };
 
   const updateProduct = async (documentId: string, productData: any) => {
     try {
       await strapi.put(`/products/${documentId}`, { data: productData });
-      const fetchRes = await strapi.get(`/products/${documentId}?populate=imageUrl`);
+      const fetchRes = await strapi.get(
+        `/products/${documentId}?populate=imageUrl`,
+      );
       const updated = normalizeProduct(fetchRes.data.data);
-      setProducts(prev => prev.map(p => p.documentId === documentId ? updated : p));
-      toast.success('Product updated');
+      setProducts((prev) =>
+        prev.map((p) => (p.documentId === documentId ? updated : p)),
+      );
+      toast.success("Product updated");
     } catch (error: any) {
-      console.error('Update error:', error.response?.data);
-      toast.error(error.response?.data?.error?.message || 'Failed to update product');
+      console.error("Update error:", error.response?.data);
+      toast.error(
+        error.response?.data?.error?.message || "Failed to update product",
+      );
     }
   };
 
   const deleteProduct = async (documentId: string) => {
     try {
       await strapi.delete(`/products/${documentId}`);
-      setProducts(prev => prev.filter(p => p.documentId !== documentId));
-      toast.success('Product deleted');
+      setProducts((prev) => prev.filter((p) => p.documentId !== documentId));
+      toast.success("Product deleted");
     } catch (error: any) {
-      console.error('Delete error:', error.response?.data);
-      toast.error('Failed to delete product');
+      console.error("Delete error:", error.response?.data);
+      toast.error("Failed to delete product");
     }
   };
 
   return (
-    <ProductContext.Provider value={{ products, loading, addProduct, updateProduct, deleteProduct }}>
+    <ProductContext.Provider
+      value={{ products, loading, addProduct, updateProduct, deleteProduct, storeTotalSales }}
+    >
       {children}
     </ProductContext.Provider>
   );
@@ -94,6 +120,6 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
 
 export function useProducts() {
   const ctx = useContext(ProductContext);
-  if (!ctx) throw new Error('useProducts must be used within ProductProvider');
+  if (!ctx) throw new Error("useProducts must be used within ProductProvider");
   return ctx;
 }

@@ -69,6 +69,7 @@ export function normalizeProduct(item: any): Product {
     description: attrs.description || "",
     category: category,
     imageUrl: extractImages(attrs.imageUrl),
+    details: attrs.details,
   };
 }
 
