@@ -50,6 +50,7 @@ export function ProductFormModal({
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+
   // Predefined options for dropdowns
   const fitOptions = [
     "Loose fit",
@@ -140,7 +141,7 @@ export function ProductFormModal({
             totalSales: product.details.totalSales ?? 0,
           });
         } else {
-          // Reset details to default
+          // Reset details to default (with random sales for new product)
           setDetails({
             fit: "",
             fabric: "",
@@ -153,7 +154,7 @@ export function ProductFormModal({
             scenarios: [],
             logistics: "",
             brandCopy: "",
-            totalSales: Math.floor(Math.random() * (5000 - 100 + 1)) + 100, // random 100‑5000
+            totalSales: Math.floor(Math.random() * (5000 - 100 + 1)) + 100,
           });
         }
       } else {
@@ -283,7 +284,7 @@ export function ProductFormModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="!w-[95vw] !max-w-xl py-0 overflow-hidden bg-white rounded-2xl shadow-2xl border-none">
+      <DialogContent className="!w-[95vw] !max-w-5xl py-0 overflow-hidden bg-white rounded-2xl shadow-2xl border-none">
         <div className="px-6 pt-6 pb-4 border-b border-gray-100">
           <DialogHeader>
             <DialogTitle className="text-2xl font-semibold text-gray-900">
@@ -377,32 +378,32 @@ export function ProductFormModal({
             <h3 className="text-md font-semibold text-gray-800 border-b pb-2">
               Detailed Specifications
             </h3>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               {/* Column 1 */}
               <div className="space-y-4">
-                <div className="space-y-2 overflow-hidden">
+                <div className="space-y-2">
                   <Label>Fit</Label>
-                  <Combobox className="p-2"
+                  <Combobox
                     options={fitOptions}
-                    value={details.fit}
+                    value={details.fit ?? ""}
                     onChange={(val) => setDetails({ ...details, fit: val })}
                     placeholder="Select or type fit"
                   />
                 </div>
-                <div className="space-y-2 overflow-hidden">
+                <div className="space-y-2">
                   <Label>Fabric</Label>
-                  <Combobox className="p-2"
+                  <Combobox
                     options={fabricOptions}
-                    value={details.fabric}
+                    value={details.fabric ?? ""}
                     onChange={(val) => setDetails({ ...details, fabric: val })}
                     placeholder="Select or type fabric"
                   />
                 </div>
-                <div className="space-y-2 overflow-hidden">
+                <div className="space-y-2">
                   <Label>Neckline</Label>
-                  <Combobox className="p-2"
+                  <Combobox
                     options={necklineOptions}
-                    value={details.neckline}
+                    value={details.neckline ?? ""}
                     onChange={(val) =>
                       setDetails({ ...details, neckline: val })
                     }
@@ -412,29 +413,29 @@ export function ProductFormModal({
               </div>
               {/* Column 2 */}
               <div className="space-y-4">
-                <div className="space-y-2 overflow-hidden">
+                <div className="space-y-2">
                   <Label>Sleeve</Label>
-                  <Combobox className="p-2"
+                  <Combobox
                     options={sleeveOptions}
-                    value={details.sleeve}
+                    value={details.sleeve ?? ""}
                     onChange={(val) => setDetails({ ...details, sleeve: val })}
                     placeholder="Select or type sleeve"
                   />
                 </div>
-                <div className="space-y-2 overflow-hidden">
+                <div className="space-y-2">
                   <Label>Pattern</Label>
-                  <Combobox className="p-2"
+                  <Combobox
                     options={patternOptions}
-                    value={details.pattern}
+                    value={details.pattern ?? ""}
                     onChange={(val) => setDetails({ ...details, pattern: val })}
                     placeholder="Select or type pattern"
                   />
                 </div>
-                <div className="space-y-2 overflow-hidden">
+                <div className="space-y-2">
                   <Label>Season</Label>
-                  <Combobox className="p-2"
+                  <Combobox
                     options={seasonOptions}
-                    value={details.season}
+                    value={details.season ?? ""}
                     onChange={(val) => setDetails({ ...details, season: val })}
                     placeholder="Select or type season"
                   />
@@ -442,7 +443,7 @@ export function ProductFormModal({
               </div>
               {/* Column 3 */}
               <div className="space-y-4">
-                <div className="space-y-2 overflow-hidden">
+                <div className="space-y-2">
                   <Label>Style (comma separated)</Label>
                   <Input
                     value={arrayToString(details.style)}
@@ -450,7 +451,7 @@ export function ProductFormModal({
                     placeholder="Youth casual, streetwear"
                   />
                 </div>
-                <div className="space-y-2 overflow-hidden">
+                <div className="space-y-2">
                   <Label>Audience (comma separated)</Label>
                   <Input
                     value={arrayToString(details.audience)}
@@ -460,7 +461,7 @@ export function ProductFormModal({
                     placeholder="Unisex, adults"
                   />
                 </div>
-                <div className="space-y-2 overflow-hidden">
+                <div className="space-y-2">
                   <Label>Scenarios (comma separated)</Label>
                   <Input
                     value={arrayToString(details.scenarios)}
@@ -479,7 +480,7 @@ export function ProductFormModal({
             <h3 className="text-md font-semibold text-gray-800 border-b pb-2">
               Logistics & Brand Story
             </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Logistics</Label>
                 <Textarea
@@ -512,7 +513,7 @@ export function ProductFormModal({
             <h3 className="text-md font-semibold text-gray-800 border-b pb-2">
               Sales Statistics
             </h3>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4">
               <div className="space-y-2">
                 <Label>Total sales (this product)</Label>
                 <Input
@@ -522,20 +523,6 @@ export function ProductFormModal({
                     setDetails({
                       ...details,
                       totalSales: Number(e.target.value),
-                    })
-                  }
-                  disabled={loading}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>Store total sales</Label>
-                <Input
-                  type="number"
-                  value={details.storeTotalSales}
-                  onChange={(e) =>
-                    setDetails({
-                      ...details,
-                      storeTotalSales: Number(e.target.value),
                     })
                   }
                   disabled={loading}
