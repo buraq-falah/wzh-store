@@ -1,8 +1,11 @@
-import type { NextConfig } from "next";
-
-const nextConfig: NextConfig = {
-  /* config options here */
-  reactStrictMode: false,
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  images: {
+    remotePatterns: [
+      new URL("http://localhost:1337/**"),
+      new URL("https://wzh-backend.onrender.com/**"),
+    ],
+  },
 };
 
 export default nextConfig;
