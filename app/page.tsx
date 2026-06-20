@@ -195,9 +195,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="bg-gradient-to-t from-gray-900 to-gray-950 text-white py-20">
-        <Footer />
-      </section>
     </>
   );
 }

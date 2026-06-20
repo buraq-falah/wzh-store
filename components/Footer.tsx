@@ -14,7 +14,7 @@ export function Footer() {
   };
   return (
     <>
-    <footer className="bg-gradient-to-t from-gray-900 to-gray-950 text-white mt-20">
+    <footer className="bg-gradient-to-t from-gray-900 to-gray-950 text-white mt-5">
       <div className="container mx-auto px-6 py-16 grid md:grid-cols-4 gap-10">
         <div>
           <div className="flex items-center gap-2 text-2xl font-bold mb-4">
