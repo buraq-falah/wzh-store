@@ -11,14 +11,13 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const ADMIN_EMAIL = 'admin@wzh.com';
-const ADMIN_PASSWORD = 'admin123'; // غير كلمة المرور كما تشاء
+const ADMIN_PASSWORD = 'admin123';
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // قراءة التوكن من localStorage عند تحميل التطبيق
     const token = localStorage.getItem('admin_auth');
     setIsAuthenticated(token === 'true');
     setIsLoading(false);
@@ -46,7 +45,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 }
 
 export function useAuth() {
-  const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error('useAuth must be used within AuthProvider');
-  return ctx;
+  const context = useContext(AuthContext);
+  if (!context) throw new Error('useAuth must be used within AuthProvider');
+  return context;
 }

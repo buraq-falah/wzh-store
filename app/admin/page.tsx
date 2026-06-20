@@ -99,8 +99,7 @@ import { ProductCard } from '../../components/ProductCard';
 import { Product } from '@/types/product';
 
 export default function AdminPage() {
-  // ✅ ALL hooks must be called unconditionally at the top
-  const { isAuthenticated, isLoading } = useAuth(); // 👈 destructure isLoading
+  const { isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
   const { products, loading, addProduct, updateProduct, deleteProduct } = useProducts();
   const [modalOpen, setModalOpen] = useState(false);
@@ -109,21 +108,7 @@ export default function AdminPage() {
   const [productToDelete, setProductToDelete] = useState<Product | null>(null);
   const isSavingRef = useRef(false);
 
-  // ✅ Redirect effect must also be unconditional
-  useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
-      router.push('/login');
-    }
-  }, [isLoading, isAuthenticated, router]);
-
-  if (isLoading) {
-    return <div className="flex justify-center items-center h-screen">Checking authentication...</div>;
-  }
-  
-  // ✅ Early return is allowed AFTER all hooks have been called
-  if (!isAuthenticated) {
-    return null; // or a loading spinner
-  }
+ 
 
   const handleEdit = (product: Product) => {
     setEditingProduct(product);

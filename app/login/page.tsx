@@ -134,11 +134,10 @@ export default function LoginPage() {
     e.preventDefault();
     setLoading(true);
     // Simulate async validation
-    await new Promise(resolve => setTimeout(resolve, 300));
     const success = login(email, password);
     if (success) {
       toast.success('Logged in successfully');
-      router.push('/admin');
+      router.replace('/admin');
     } else {
       toast.error('Invalid email or password');
     }
