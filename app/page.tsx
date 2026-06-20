@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import { useProducts } from "@/context/ProductContext";
 import { ProductCard } from "../components/ProductCard";
 import { Button } from "../components/ui/button";
@@ -9,19 +9,16 @@ import { Footer } from "../components/Footer";
 export default function HomePage() {
   const { products, loading } = useProducts();
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
+
   const videos = ["/videos/hat.mp4", "/videos/tshirt.mp4", "/videos/DIP.mp4"];
-  
-  // Create refs properly
-  const videoRefs = useRef<Array<HTMLVideoElement | null>>([]);
+
+  const videoRefs = videos.map(() => useRef(null));
 
   useEffect(() => {
-    // Ensure refs array length matches videos
-    videoRefs.current = videoRefs.current.slice(0, videos.length);
-    // Play all videos from the start to have them ready
-    videoRefs.current.forEach((ref) => {
-      if (ref) {
-        ref.currentTime = 0;
-        ref.play().catch(() => {});
+    videoRefs.forEach((ref) => {
+      if (ref.current) {
+        ref.current.currentTime = 0;
+        ref.current.play().catch(() => {});
       }
     });
   }, []);
@@ -29,26 +26,28 @@ export default function HomePage() {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentVideoIndex((prev) => (prev + 1) % videos.length);
-    }, 13000); // Change video every 13 seconds
+    }, 13000);
     return () => clearInterval(interval);
   }, [videos.length]);
 
-  if (loading) return <div className="flex justify-center items-center h-64">Loading...</div>;
+  if (loading)
+    return (
+      <div className="flex justify-center items-center h-64">Loading...</div>
+    );
 
   return (
     <>
       <section className="relative h-[95vh] min-h-[520px] flex items-center justify-center overflow-hidden bg-black">
+        {/* Video background */}
         {videos.map((video, index) => (
-          
           <video
-            ref={(el) => { videoRefs.current[index] = el; }}
+            ref={videoRefs[index]}
             key={index}
             autoPlay
             muted
             playsInline
-            loop
-            preload="metadata"        // ← تغيير من "auto" إلى "metadata"
-            poster={`/videos/poster-${index}.png`} // ← صورة خفيفة
+            loop={true}
+            preload="auto"
             className={`absolute inset-0 top-0 left-0 w-full h-full min-w-full min-h-full block object-cover object-center border-none m-0 p-0 will-change-transform transition-opacity duration-1000 ${
               index === currentVideoIndex ? "opacity-100" : "opacity-0"
             }`}
@@ -58,6 +57,7 @@ export default function HomePage() {
             <source src={video.replace(".mov", ".mp4")} type="video/mp4" />
           </video>
         ))}
+
         <div className="absolute inset-0 bg-black/60 z-10" />
         <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(19,19,19,0.5),rgba(7,7,7,0.3))] z-10" />
         <div className="relative z-20 text-center px-6 max-w-4xl">
@@ -72,23 +72,24 @@ export default function HomePage() {
             highlight coveted accessories, and elevate every moment.
           </p>
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link href="/shop/Accessories">
+             <Link href="/shop">
               <Button
                 size="lg"
-                className="rounded-full border border-white/20 bg-white/95 text-black px-8 shadow-xl hover:bg-white"
-              >
-                Explore Accessories
-              </Button>
-            </Link>
-            <Link href="/shop">
-              <Button
-                size="lg"
-                variant="outline"
-                className="rounded-full border-white/20 text-white hover:bg-white/10 px-8"
+                className="rounded-full border cursor-pointer border-white bg-white text-red-500 px-8 shadow-xl hover:bg-red-500 hover:text-white transition-all duration-300"
               >
                 Shop the Collection
               </Button>
             </Link>
+            <Link href="/shop/Accessories">
+              <Button
+                size="lg"
+                variant="outline"
+                className="rounded-full border-white/20 cursor-pointer text-white hover:bg-white/10 px-8"
+              >
+                Explore Accessories
+              </Button>
+            </Link>
+           
           </div>
         </div>
       </section>
@@ -167,6 +168,7 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Best Sellers Section */}
       <section className="container mx-auto px-6 py-20">
         <div className="text-center mb-12">
           <span className="text-sm uppercase tracking-[0.35em] text-primary">
@@ -180,7 +182,19 @@ export default function HomePage() {
             <ProductCard key={product.id} product={product} isAdmin={false} />
           ))}
         </div>
+        {/* ✅ Show More Button */}
+        <div className="text-center mt-12">
+          <Link href="/shop">
+            <Button
+              variant="outline"
+              className="rounded-full px-8 border-gray-300 hover:border-primary hover:shadow-xs hover:bg-red-500 hover:text-white transition-all duration-300 cursor-pointer"
+            >
+              View All Products →
+            </Button>
+          </Link>
+        </div>
       </section>
+
       <section className="bg-gradient-to-t from-gray-900 to-gray-950 text-white py-20">
         <Footer />
       </section>
