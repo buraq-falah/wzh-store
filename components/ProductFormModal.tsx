@@ -11,6 +11,8 @@ import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { Textarea } from "../components/ui/textarea";
+
+import { MultiSelect } from "../components/ui/multi-select";
 import {
   Select,
   SelectContent,
@@ -18,12 +20,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../components/ui/select";
+import { CldUploadWidget } from "next-cloudinary";
+import type { CloudinaryUploadWidgetInfo } from "next-cloudinary";
 import { Product, ProductDetails } from "@/types/product";
-import { strapi } from "../lib/strapi";
 import { X, Upload } from "lucide-react";
 import { Combobox } from "../components/ui/combobox";
 
-const categories = ["Men", "Women", "Accessories", "Hats", "Sports"];
+const categories = ["Unisex", "Men", "Women", "Accessories", "Hats", "Sports"];
 
 interface ProductFormModalProps {
   open: boolean;
@@ -43,10 +46,8 @@ export function ProductFormModal({
   const [price, setPrice] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
-  const [imageFiles, setImageFiles] = useState<File[]>([]);
-  const [existingImages, setExistingImages] = useState<
-    { id: number; url: string }[]
-  >([]);
+  const [existingImages, setExistingImages] = useState<string[]>([]);
+  const [uploadedImageUrls, setUploadedImageUrls] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -118,15 +119,16 @@ export function ProductFormModal({
 
   useEffect(() => {
     if (open) {
+      setUploadedImageUrls([]);
       if (product) {
         setName(product.name);
         setPrice(String(product.price));
         setDescription(product.description);
         setCategory(product.category);
         setExistingImages(product.imageUrl || []);
-        // Populate details if they exist
         if (product.details) {
           setDetails({
+            ...product.details, // يحافظ على جميع الحقول (بما فيها colors, sizes)
             fit: product.details.fit || "",
             fabric: product.details.fabric || "",
             neckline: product.details.neckline || "",
@@ -139,9 +141,10 @@ export function ProductFormModal({
             logistics: product.details.logistics || "",
             brandCopy: product.details.brandCopy || "",
             totalSales: product.details.totalSales ?? 0,
+            colors: product.details.colors || [],
+            sizes: product.details.sizes || [],
           });
         } else {
-          // Reset details to default (with random sales for new product)
           setDetails({
             fit: "",
             fabric: "",
@@ -155,16 +158,17 @@ export function ProductFormModal({
             logistics: "",
             brandCopy: "",
             totalSales: Math.floor(Math.random() * (5000 - 100 + 1)) + 100,
+            colors: [],
+            sizes: [],
           });
         }
       } else {
-        // Reset all fields for new product
         setName("");
         setPrice("");
         setDescription("");
         setCategory("");
         setExistingImages([]);
-        setImageFiles([]);
+        setUploadedImageUrls([]);
         setDetails({
           fit: "",
           fabric: "",
@@ -178,6 +182,8 @@ export function ProductFormModal({
           logistics: "",
           brandCopy: "",
           totalSales: Math.floor(Math.random() * (5000 - 100 + 1)) + 100,
+          colors: [],
+          sizes: [],
         });
       }
       setErrors({});
@@ -186,18 +192,12 @@ export function ProductFormModal({
     }
   }, [open, product]);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      setImageFiles(Array.from(e.target.files));
-    }
-  };
-
-  const removeExisting = (id: number) => {
-    setExistingImages((prev) => prev.filter((img) => img.id !== id));
+  const removeExisting = (index: number) => {
+    setExistingImages((prev) => prev.filter((_, i) => i !== index));
   };
 
   const removeNew = (index: number) => {
-    setImageFiles((prev) => prev.filter((_, i) => i !== index));
+    setUploadedImageUrls((prev) => prev.filter((_, i) => i !== index));
   };
 
   const validate = () => {
@@ -211,24 +211,13 @@ export function ProductFormModal({
     return Object.keys(newErrors).length === 0;
   };
 
-  const uploadImages = async (files: File[]): Promise<number[]> => {
-    if (files.length === 0) return [];
-    const formData = new FormData();
-    files.forEach((f) => formData.append("files", f));
-    const res = await strapi.post("/upload", formData);
-    return res.data.map((f: any) => f.id);
-  };
-
   const handleSubmit = async () => {
     if (!validate()) return;
     setLoading(true);
-    setUploading(true);
 
     try {
-      let newIds = await uploadImages(imageFiles);
-      let allIds = [...existingImages.map((img) => img.id), ...newIds];
-
-      // Build product data with JSON 'details'
+      const allImages = [...existingImages, ...uploadedImageUrls];
+      console.log("All images being saved:", allImages); // للتأكد
       const productData: any = {
         name: name.trim(),
         price: parseFloat(price),
@@ -247,12 +236,11 @@ export function ProductFormModal({
           logistics: details.logistics,
           brandCopy: details.brandCopy,
           totalSales: details.totalSales ? Number(details.totalSales) : 0,
+          colors: details.colors,
+          sizes: details.sizes,
         },
+        imageUrl: allImages, // now just array of strings (URLs)
       };
-      if (allIds.length > 0) {
-        productData.imageUrl = allIds;
-      }
-
       await onSave(productData);
       onOpenChange(false);
     } catch (err: any) {
@@ -261,7 +249,6 @@ export function ProductFormModal({
         submit: err.response?.data?.error?.message || "Save failed",
       });
     } finally {
-      setUploading(false);
       setLoading(false);
     }
   };
@@ -273,7 +260,6 @@ export function ProductFormModal({
     }
   };
 
-  // Helper for array inputs (comma-separated)
   const updateArrayField = (field: keyof ProductDetails, value: string) => {
     const arr = value
       .split(",")
@@ -282,9 +268,12 @@ export function ProductFormModal({
     setDetails((prev) => ({ ...prev, [field]: arr }));
   };
 
+  // Get cloud name from environment variable
+  const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || "";
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="!w-[95vw] !max-w-5xl py-0 overflow-hidden bg-white rounded-2xl shadow-2xl border-none">
+    <Dialog open={open} onOpenChange={onOpenChange} modal={false}>
+      <DialogContent className="!w-[95vw] !max-w-5xl z-50 py-0 overflow-hidden bg-white rounded-2xl shadow-2xl border-none">
         <div className="px-6 pt-6 pb-4 border-b border-gray-100">
           <DialogHeader>
             <DialogTitle className="text-2xl font-semibold text-gray-900">
@@ -340,12 +329,12 @@ export function ProductFormModal({
                   onValueChange={setCategory}
                   disabled={loading}
                 >
-                  <SelectTrigger className="bg-gray-50">
+                  <SelectTrigger className="cursor-pointer" >
                     <SelectValue placeholder="Select category" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="bg-white ">
                     {categories.map((c) => (
-                      <SelectItem key={c} value={c}>
+                      <SelectItem key={c} value={c} className=" hover:bg-gray-100 cursor-pointer">
                         {c}
                       </SelectItem>
                     ))}
@@ -380,6 +369,53 @@ export function ProductFormModal({
             </h3>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               {/* Column 1 */}
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label>Available Colors</Label>
+                  <MultiSelect
+                    options={[
+                      "Black",
+                      "White",
+                      "Red",
+                      "Blue",
+                      "Green",
+                      "Yellow",
+                      "Purple",
+                      "Orange",
+                      "Pink",
+                      "Brown",
+                      "Gray",
+                      "Beige",
+                      "Navy",
+                      "Olive",
+                    ]}
+                    value={details.colors || []}
+                    onChange={(colors) => setDetails({ ...details, colors })}
+                    placeholder="Select or add colors"
+                    creatable={true}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Available Sizes</Label>
+                  <MultiSelect
+                    options={[
+                      "XS",
+                      "S",
+                      "M",
+                      "L",
+                      "XL",
+                      "XXL",
+                      "3XL",
+                      "4XL",
+                      "5XL",
+                    ]}
+                    value={details.sizes || []}
+                    onChange={(sizes) => setDetails({ ...details, sizes })}
+                    placeholder="Select or add sizes"
+                    creatable={true}
+                  />
+                </div>
+              </div>
               <div className="space-y-4">
                 <div className="space-y-2">
                   <Label>Fit</Label>
@@ -531,26 +567,28 @@ export function ProductFormModal({
             </div>
           </div>
 
-          {/* Images – unchanged */}
+          {/* Images Section */}
           <div className="space-y-3">
             <Label>Product Images</Label>
+
+            {/* Existing images */}
             {existingImages.length > 0 && (
               <div className="mt-2">
                 <p className="text-xs text-gray-500 mb-2">Current images</p>
                 <div className="flex flex-wrap gap-3">
-                  {existingImages.map((img) => (
+                  {existingImages.map((url, idx) => (
                     <div
-                      key={img.id}
+                      key={idx}
                       className="relative group w-20 h-20 rounded-lg overflow-hidden border border-gray-200 shadow-sm"
                     >
                       <img
-                        src={img.url}
+                        src={url}
                         alt="product"
                         className="w-full h-full object-cover"
                       />
                       <button
                         type="button"
-                        onClick={() => removeExisting(img.id)}
+                        onClick={() => removeExisting(idx)}
                         className="absolute top-1 right-1 bg-white/80 backdrop-blur rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition"
                       >
                         <X className="w-4 h-4 text-red-600" />
@@ -560,48 +598,71 @@ export function ProductFormModal({
                 </div>
               </div>
             )}
-            <div className="mt-2">
-              <Label className="text-xs text-gray-500 mb-1 block">
-                Add new images
-              </Label>
-              <div className="flex items-center gap-3">
-                <label className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg cursor-pointer transition text-sm text-gray-700">
-                  <Upload className="w-4 h-4" /> Upload files
-                  <input
-                    type="file"
-                    multiple
-                    accept="image/*"
-                    onChange={handleFileChange}
-                    disabled={loading || uploading}
-                    className="hidden"
-                  />
-                </label>
-                <span className="text-xs text-gray-400">
-                  {imageFiles.length} new file(s) selected
-                </span>
-              </div>
-            </div>
-            {imageFiles.length > 0 && (
-              <div className="flex flex-wrap gap-3 mt-3">
-                {imageFiles.map((file, idx) => (
-                  <div
-                    key={idx}
-                    className="relative group w-20 h-20 rounded-lg overflow-hidden border border-gray-200 shadow-sm"
-                  >
-                    <img
-                      src={URL.createObjectURL(file)}
-                      alt="preview"
-                      className="w-full h-full object-cover"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => removeNew(idx)}
-                      className="absolute top-1 right-1 bg-white/80 backdrop-blur rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition"
+
+            {/* Upload to Cloudinary using CldUploadButton */}
+            {/* Upload to Cloudinary using CldUploadWidget */}
+            {cloudName && (
+              <div className="mt-2">
+                <Label className="text-xs text-gray-500 mb-1 block">
+                  Add new images
+                </Label>
+                <CldUploadWidget
+                  uploadPreset="wzh_unsigned"
+                  options={{ multiple: true, cloudName }}
+                  onSuccess={(result, { widget }) => {
+                    console.log("Upload result:", result); // للتأكد من وصول البيانات
+                    if (typeof result?.info !== "string") {
+                      const info = result?.info as CloudinaryUploadWidgetInfo;
+                      if (info && info.secure_url) {
+                        setUploadedImageUrls((prev) => {
+                          const newUrls = [...prev, info.secure_url];
+                          console.log("Updated uploadedImageUrls:", newUrls);
+                          return newUrls;
+                        });
+                      }
+                    } else {
+                      console.error("Upload info is string:", result?.info);
+                    }
+                  }}
+                  onError={(error) => console.error("Upload error:", error)}
+                >
+                  {({ open }) => (
+                    <div
+                      onClick={() => open()}
+                      className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors border border-gray-200 bg-gray-100 hover:bg-gray-200 h-9 px-4 py-2 cursor-pointer"
                     >
-                      <X className="w-4 h-4 text-red-600" />
-                    </button>
-                  </div>
-                ))}
+                      <Upload className="w-4 h-4 mr-2" /> Upload to Cloudinary
+                    </div>
+                  )}
+                </CldUploadWidget>
+              </div>
+            )}
+
+            {/* Preview newly uploaded images */}
+            {uploadedImageUrls.length > 0 && (
+              <div className="mt-2">
+                <p className="text-xs text-gray-500 mb-2">New images</p>
+                <div className="flex flex-wrap gap-3">
+                  {uploadedImageUrls.map((url, idx) => (
+                    <div
+                      key={idx}
+                      className="relative group w-20 h-20 rounded-lg overflow-hidden border border-gray-200 shadow-sm"
+                    >
+                      <img
+                        src={url}
+                        alt="new product"
+                        className="w-full h-full object-cover"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeNew(idx)}
+                        className="absolute top-1 right-1 bg-white/80 backdrop-blur rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition"
+                      >
+                        <X className="w-4 h-4 text-red-600" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
           </div>

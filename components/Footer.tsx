@@ -1,8 +1,19 @@
+'use client';
 import { Phone, Mail, MapPin, Sparkles } from 'lucide-react';
-import Link from 'next/link';
+import { useState } from "react";
+import Link from "next/link";
+import { OrderContactModal } from "./OrderContactModal";
 
 export function Footer() {
+  const [modalOpen, setModalOpen] = useState(false);
+  const [contactType, setContactType] = useState<"order" | "shipping" | "faq" | "contact">("order");
+
+  const openModal = (type: "order" | "shipping" | "faq" | "contact") => {
+    setContactType(type);
+    setModalOpen(true);
+  };
   return (
+    <>
     <footer className="bg-gradient-to-t from-gray-900 to-gray-950 text-white mt-20">
       <div className="container mx-auto px-6 py-16 grid md:grid-cols-4 gap-10">
         <div>
@@ -15,10 +26,22 @@ export function Footer() {
         <div>
           <h4 className="font-semibold mb-4">Shop</h4>
           <ul className="space-y-2 text-sm text-gray-400">
-            <li><Link href="/category/Men" className="hover:text-white transition">Men</Link></li>
-            <li><Link href="/category/Women" className="hover:text-white transition">Women</Link></li>
-            <li><Link href="/category/Accessories" className="hover:text-white transition">Accessories</Link></li>
-          </ul>
+              <li>
+                <button onClick={() => openModal("contact")} className="hover:text-white transition cursor-pointer">
+                  Contact
+                </button>
+              </li>
+              <li>
+                <button onClick={() => openModal("faq")} className="hover:text-white transition cursor-pointer">
+                  FAQs
+                </button>
+              </li>
+              <li>
+                <button onClick={() => openModal("shipping")} className="hover:text-white transition cursor-pointer">
+                  Shipping
+                </button>
+              </li>
+            </ul>
         </div>
         <div>
           <h4 className="font-semibold mb-4">Support</h4>
@@ -40,5 +63,12 @@ export function Footer() {
         © {new Date().getFullYear()} WZH. All rights reserved.
       </div>
     </footer>
+    <OrderContactModal
+        open={modalOpen}
+        onOpenChange={setModalOpen}
+        contactType={contactType}
+      />
+    </>
+
   );
 }

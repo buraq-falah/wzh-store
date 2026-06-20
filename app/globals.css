@@ -154,3 +154,18 @@ html {
 
   mask-composite: intersect;
 }
+
+/* Force Cloudinary widget to appear above dialog overlay */
+.cloudinary-widget,
+.cloudinary-popup,
+.uploader-window,
+.cld-widget,
+.cloudinary-upload-widget {
+  z-index: 100000 !important;
+}
+
+/* Also ensure the iframe inside is on top */
+.cloudinary-widget iframe,
+.cloudinary-upload-widget iframe {
+  z-index: 100001 !important;
+}

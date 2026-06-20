@@ -28,7 +28,7 @@ export default function CategoryPage() {
   if (loading) return <div className="text-center py-12">Loading...</div>;
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="min-h-screen bg-background">
       <section className="sticky top-0 z-10 bg-background/80 backdrop-blur">
         <div className="container mx-auto px-4 py-4">
           <div className="flex flex-col lg:flex-row gap-4 lg:items-center lg:justify-between">
@@ -86,7 +86,7 @@ export default function CategoryPage() {
           </div>
         </div>
       </section>
-
+                <section className="container mx-auto px-4 pb-14">
       {filteredProducts.length === 0 ? (
         <p className="text-center text-muted-foreground py-12">
           {searchQuery ? `No products match "${searchQuery}" in ${slug} category.` : `No products in ${slug} category.`}
@@ -96,6 +96,7 @@ export default function CategoryPage() {
           {filteredProducts.map(product => <ProductCard key={product.id} product={product} />)}
         </div>
       )}
+      </section>
     </div>
   );
 }

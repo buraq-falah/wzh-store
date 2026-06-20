@@ -59,7 +59,7 @@ export function Combobox({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-full justify-between bg-gray-50 border-gray-200"
+          className="w-full justify-between bg-gray-50 border-gray-200 hover:bg-gray-200 cursor-pointer"
         >
           {value || placeholder}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -83,6 +83,7 @@ export function Combobox({
                   key={opt}
                   value={opt}
                   onSelect={handleSelect}
+                  className='hover:bg-gray-100 cursor-pointer'
                 >
                   <Check
                     className={cn(

@@ -18,6 +18,8 @@ export interface ProductDetails {
   // sales stats
   totalSales?: number;
   storeTotalSales?: number;
+  colors?: string[];    // قائمة الألوان المتاحة
+  sizes?: string[];     // قائمة المقاسات المتاحة
   // any other custom fields
   [key: string]: any;
 }
@@ -29,7 +31,7 @@ export interface Product {
   price: number;
   description: string;   // short description (plain text)
   category: string;
-  imageUrl: ProductImage[];
+  imageUrl: string[];
   details?: ProductDetails;  // new JSON field
 }
 // Strapi response format

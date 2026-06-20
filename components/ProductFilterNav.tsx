@@ -5,6 +5,7 @@ import { cn } from '../lib/utils';
 
 const categories = [
   { label: 'All', value: 'all' },
+  { label: 'Unisex', value: 'Unisex' },
   { label: 'Men', value: 'Men' },
   { label: 'Women', value: 'Women' },
   { label: 'Accessories', value: 'Accessories' },

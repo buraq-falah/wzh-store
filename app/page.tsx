@@ -72,7 +72,7 @@ export default function HomePage() {
             highlight coveted accessories, and elevate every moment.
           </p>
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link href="/category/Accessories">
+            <Link href="/shop/Accessories">
               <Button
                 size="lg"
                 className="rounded-full border border-white/20 bg-white/95 text-black px-8 shadow-xl hover:bg-white"
@@ -80,7 +80,7 @@ export default function HomePage() {
                 Explore Accessories
               </Button>
             </Link>
-            <Link href="/category/Men">
+            <Link href="/shop">
               <Button
                 size="lg"
                 variant="outline"

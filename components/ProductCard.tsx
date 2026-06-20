@@ -7,7 +7,7 @@ import {
   CardHeader,
 } from "../components/ui/card";
 import { Button } from "../components/ui/button";
-import { Edit, Trash2, ChevronLeft, ChevronRight, Eye } from "lucide-react";
+import { Edit, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
 import { Product } from "@/types/product";
 import Link from "next/link";
 
@@ -24,7 +24,7 @@ export function ProductCard({
   onEdit,
   onDelete,
 }: ProductCardProps) {
-  const images = product.imageUrl || [];
+  const images = product.imageUrl || []; // now array of strings (direct URLs)
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const nextImage = (e: React.MouseEvent) => {
@@ -39,12 +39,10 @@ export function ProductCard({
     setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
   };
 
-  const currentImage =
-    images.length > 0 ? images[currentIndex].url : "/placeholder.jpg";
+  const currentImage = images.length > 0 ? images[currentIndex] : "/placeholder.jpg";
 
   return (
     <Card className="group relative overflow-hidden rounded-2xl border-0 bg-white shadow-lg transition-all duration-500 hover:shadow-2xl hover:-translate-y-2">
-      {/* Image Container */}
       <Link href={`/product/${product.id}`} className="block cursor-pointer">
         <div className="relative aspect-square overflow-hidden bg-gray-100">
           <img
@@ -52,7 +50,6 @@ export function ProductCard({
             alt={product.name}
             className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
           />
-          {/* Carousel Controls - always visible on hover */}
           {images.length > 1 && (
             <>
               <button
@@ -74,7 +71,6 @@ export function ProductCard({
           )}
         </div>
 
-        {/* Content */}
         <CardHeader className="pb-2 pt-4">
           <div className="flex items-start justify-between">
             <div>
@@ -107,7 +103,6 @@ export function ProductCard({
         </CardContent>
       </Link>
 
-      {/* Admin Actions */}
       {isAdmin && (
         <CardFooter className="gap-2 border-t p-4">
           <Button
