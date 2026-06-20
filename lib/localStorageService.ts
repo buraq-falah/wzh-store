@@ -2,14 +2,53 @@ import { Product } from '@/types/product';
 
 const STORAGE_KEY = 'wzh_products';
 
+// 🌟 Default products to seed the store
+const DEFAULT_PRODUCTS: Product[] = [
+  {
+    id: 1,
+    documentId: 'default_1',
+    name: 'Classic White T-Shirt',
+    price: 29.99,
+    description: 'Essential white tee, 100% cotton.',
+    category: 'Men',
+    imageUrl: ['https://placehold.co/400x400?text=WZH'],
+    details: { colors: ['White', 'Black'], sizes: ['S', 'M', 'L'] }
+  },
+  {
+    id: 2,
+    documentId: 'default_2',
+    name: 'Slim Fit Denim Jacket',
+    price: 89.99,
+    description: 'Classic denim jacket with a modern slim fit.',
+    category: 'Unisex',
+    imageUrl: ['https://placehold.co/400x400?text=WZH'],
+    details: { colors: ['Blue', 'Black'], sizes: ['M', 'L', 'XL'] }
+  },
+  {
+    id: 3,
+    documentId: 'default_3',
+    name: 'Athletic Hoodie',
+    price: 59.99,
+    description: 'Comfortable hoodie for workouts and casual days.',
+    category: 'Women',
+    imageUrl: ['https://placehold.co/400x400?text=WZH'],
+    details: { colors: ['Gray', 'Navy'], sizes: ['S', 'M', 'L', 'XL'] }
+  }
+];
+
 export const getProducts = (): Product[] => {
-  if (typeof window === 'undefined') return [];
+  if (typeof window === 'undefined') return DEFAULT_PRODUCTS;
   const stored = localStorage.getItem(STORAGE_KEY);
-  if (!stored) return [];
+  if (!stored) {
+    // First visit – seed with defaults
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(DEFAULT_PRODUCTS));
+    return DEFAULT_PRODUCTS;
+  }
   try {
-    return JSON.parse(stored);
+    const parsed = JSON.parse(stored);
+    return parsed.length ? parsed : DEFAULT_PRODUCTS;
   } catch {
-    return [];
+    return DEFAULT_PRODUCTS;
   }
 };
 
