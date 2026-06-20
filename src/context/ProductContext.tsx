@@ -127,7 +127,13 @@
 'use client';
 import React, { createContext, useContext, useEffect, useState, useRef } from 'react';
 import { Product } from '@/types/product';
-import { getProducts, saveProducts, addProduct as addProductToStorage, updateProduct as updateProductInStorage, deleteProduct as deleteProductFromStorage } from '../../lib/localStorageService';
+import { 
+  getProducts, 
+  saveProducts, 
+  addProduct as addProductToStorage, 
+  updateProduct as updateProductInStorage, 
+  deleteProduct as deleteProductFromStorage 
+} from '../../lib/localStorageService';
 import { toast } from 'sonner';
 
 interface ProductContextType {
