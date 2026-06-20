@@ -12,7 +12,7 @@ export default function HomePage() {
 
   const videos = ["/videos/hat.mp4", "/videos/tshirt.mp4", "/videos/DIP.mp4"];
 
-  const videoRefs = videos.map(() => useRef(null));
+  const videoRefs = videos.map(() => useRef<HTMLVideoElement>(null));
 
   useEffect(() => {
     videoRefs.forEach((ref) => {
