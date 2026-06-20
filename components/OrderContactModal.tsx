@@ -8,9 +8,10 @@ interface OrderContactModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   productName?: string;
+  contactType?: "order" | "shipping" | "faq" | "contact"; // <-- add this line
 }
 
-export function OrderContactModal({ open, onOpenChange, productName }: OrderContactModalProps) {
+export function OrderContactModal({ open, onOpenChange, productName, contactType }: OrderContactModalProps) {
   // بيانات التواصل - استبدلها ببياناتك الحقيقية
   const phone = "+86 135-2805-6602";
   const email = "1369077523@qq.com";
