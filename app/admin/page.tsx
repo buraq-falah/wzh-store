@@ -86,29 +86,28 @@
 //     </div>
 //   );
 // }
-'use client';
-import { useAuth } from '@/context/AuthContext';
-import { useRouter } from 'next/navigation';
-import { useEffect, useState, useRef } from 'react';
-import { useProducts } from '@/context/ProductContext';
-import { ProductFormModal } from '../../components/ProductFormModal';
-import { DeleteConfirmDialog } from '../../components/DeleteConfirmDialog';
-import { Button } from '../../components/ui/button';
-import { Plus } from 'lucide-react';
-import { ProductCard } from '../../components/ProductCard';
-import { Product } from '@/types/product';
+"use client";
+import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "next/navigation";
+import { useEffect, useState, useRef } from "react";
+import { useProducts } from "@/context/ProductContext";
+import { ProductFormModal } from "../../components/ProductFormModal";
+import { DeleteConfirmDialog } from "../../components/DeleteConfirmDialog";
+import { Button } from "../../components/ui/button";
+import { Plus } from "lucide-react";
+import { ProductCard } from "../../components/ProductCard";
+import { Product } from "@/types/product";
 
 export default function AdminPage() {
   const { isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
-  const { products, loading, addProduct, updateProduct, deleteProduct } = useProducts();
+  const { products, loading, addProduct, updateProduct, deleteProduct } =
+    useProducts();
   const [modalOpen, setModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [productToDelete, setProductToDelete] = useState<Product | null>(null);
   const isSavingRef = useRef(false);
-
- 
 
   const handleEdit = (product: Product) => {
     setEditingProduct(product);
@@ -130,7 +129,9 @@ export default function AdminPage() {
         await addProduct(productData);
       }
     } finally {
-      setTimeout(() => { isSavingRef.current = false; }, 500);
+      setTimeout(() => {
+        isSavingRef.current = false;
+      }, 500);
     }
   };
 
@@ -147,7 +148,12 @@ export default function AdminPage() {
     }
   };
 
-  if (loading) return <div className="container mx-auto py-8 text-center">Loading products...</div>;
+  if (loading)
+    return (
+      <div className="container mx-auto py-8 text-center">
+        Loading products...
+      </div>
+    );
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -163,10 +169,12 @@ export default function AdminPage() {
 
       {products.length === 0 ? (
         <div className="text-center py-12 border rounded-lg">
-          <p className="text-muted-foreground">No products yet. Click "Add Product" to start.</p>
+          <p className="text-muted-foreground">
+            No products yet. Click "Add Product" to start.
+          </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
           {products.map((product) => (
             <ProductCard
               key={product.id}
@@ -190,7 +198,7 @@ export default function AdminPage() {
         open={deleteDialogOpen}
         onOpenChange={setDeleteDialogOpen}
         onConfirm={confirmDelete}
-        productName={productToDelete?.name || ''}
+        productName={productToDelete?.name || ""}
       />
     </div>
   );

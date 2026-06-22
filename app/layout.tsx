@@ -61,7 +61,9 @@ export default function RootLayout({
         <AuthProvider>
           <ProductProvider>
             <Navbar />
-            <main>{children}</main>
+            <main className="pt-10">
+              {children}
+            </main>
             <Footer />
             <Toaster position="bottom-right" />
           </ProductProvider>

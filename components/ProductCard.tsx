@@ -39,12 +39,13 @@ export function ProductCard({
     setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
   };
 
-  const currentImage = images.length > 0 ? images[currentIndex] : "/placeholder.jpg";
+  const currentImage =
+    images.length > 0 ? images[currentIndex] : "/placeholder.jpg";
 
   return (
     <Card className="group relative overflow-hidden rounded-2xl border-0 bg-white shadow-lg transition-all duration-500 hover:shadow-2xl hover:-translate-y-2">
       <Link href={`/product/${product.id}`} className="block cursor-pointer">
-        <div className="relative aspect-square overflow-hidden bg-gray-100">
+        <div className="relative aspect-[4/5] sm:aspect-square overflow-hidden bg-gray-100">
           <img
             src={currentImage}
             alt={product.name}
@@ -60,39 +61,43 @@ export function ProductCard({
               </button>
               <button
                 onClick={nextImage}
-                className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-black/60 p-1.5 text-white opacity-0 transition-all duration-300 group-hover:opacity-100 hover:bg-black/80"
+                className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-black/60 p-1 text-white opacity-100 md:opacity-0 md:group-hover:opacity-100"
               >
                 <ChevronRight className="h-5 w-5" />
               </button>
-              <div className="absolute bottom-3 right-3 rounded-full bg-black/60 px-2 py-1 text-xs font-medium text-white">
+              <div className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-black/60 p-1 text-white opacity-100 md:opacity-0 md:group-hover:opacity-100">
                 {currentIndex + 1} / {images.length}
               </div>
             </>
           )}
         </div>
 
-        <CardHeader className="pb-2 pt-4">
-          <div className="flex items-start justify-between">
-            <div>
-              <h3 className="line-clamp-1 text-lg font-semibold tracking-tight">
+        <CardHeader className="px-3 py-3 sm:px-6 sm:py-4">
+          <div className="flex items-start gap-2">
+            <div className="min-w-0 flex-1">
+              <h3 className="line-clamp-1 text-base sm:text-lg font-semibold tracking-tight">
                 {product.name}
               </h3>
+
               <p className="text-sm text-muted-foreground capitalize">
                 {product.category}
               </p>
             </div>
+
             {product.details?.totalSales && (
-              <div className="flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-700 dark:bg-amber-950 dark:text-amber-300">
+              <div className="shrink-0 flex items-center gap-1 rounded-full bg-amber-50 px-2 py-1 text-xs font-medium text-amber-700">
                 <span>🔥</span>
-                <span>{product.details.totalSales} sold</span>
+                <span className="whitespace-nowrap">
+                  {product.details.totalSales} sold
+                </span>
               </div>
             )}
           </div>
         </CardHeader>
 
-        <CardContent className="pb-4">
+        <CardContent className="px-3 pb-3 sm:px-6 sm:pb-4">
           <div className="flex items-baseline gap-1">
-            <span className="text-2xl font-bold text-primary">
+            <span className="text-xl sm:text-2xl font-bold text-primary">
               ${product.price.toFixed(2)}
             </span>
             <span className="text-sm text-muted-foreground">USD</span>

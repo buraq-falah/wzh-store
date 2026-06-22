@@ -26,6 +26,21 @@ export function Footer() {
         <div>
           <h4 className="font-semibold mb-4">Shop</h4>
           <ul className="space-y-2 text-sm text-gray-400">
+            <li>
+                <Link href="/shop" className="hover:text-white transition">
+                  All Products
+                </Link>
+              </li>
+            <li>
+                <Link href="/shop?category=unisex" className="hover:text-white transition">
+                  Unisex
+                </Link>
+              </li>
+            </ul>
+        </div>
+        <div>
+          <h4 className="font-semibold mb-4">Support</h4>
+          <ul className="space-y-2 text-sm text-gray-400">
               <li>
                 <button onClick={() => openModal("contact")} className="hover:text-white transition cursor-pointer">
                   Contact
@@ -41,14 +56,6 @@ export function Footer() {
                   Shipping
                 </button>
               </li>
-            </ul>
-        </div>
-        <div>
-          <h4 className="font-semibold mb-4">Support</h4>
-          <ul className="space-y-2 text-sm text-gray-400">
-            <li>Contact</li>
-            <li>FAQs</li>
-            <li>Shipping</li>
           </ul>
         </div>
         <div>

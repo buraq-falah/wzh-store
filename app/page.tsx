@@ -20,28 +20,28 @@ export default function HomePage() {
   const videos = ["/videos/hat.mp4", "/videos/tshirt.mp4", "/videos/DIP.mp4"];
   const videoRefs = videos.map(() => useRef<HTMLVideoElement>(null));
 
-  // Preload videos progressively
-  useEffect(() => {
-    // Load first video immediately
-    if (videoRefs[0]?.current) {
-      videoRefs[0].current.load();
-      videoRefs[0].current.play().catch(() => {});
-    }
+  // // Preload videos progressively
+  // useEffect(() => {
+  //   // Load first video immediately
+  //   if (videoRefs[0]?.current) {
+  //     videoRefs[0].current.load();
+  //     videoRefs[0].current.play().catch(() => {});
+  //   }
 
-    // Load remaining videos after 3 seconds
-    const timer = setTimeout(() => {
-      for (let i = 1; i < videoRefs.length; i++) {
-        const video = videoRefs[i]?.current;
-        if (video) {
-          video.load();
-          video.play().catch(() => {});
-        }
-      }
-      setLoadedVideos(videos.map(() => true));
-    }, 3000);
+  //   // Load remaining videos after 3 seconds
+  //   const timer = setTimeout(() => {
+  //     for (let i = 1; i < videoRefs.length; i++) {
+  //       const video = videoRefs[i]?.current;
+  //       if (video) {
+  //         video.load();
+  //         video.play().catch(() => {});
+  //       }
+  //     }
+  //     setLoadedVideos(videos.map(() => true));
+  //   }, 3000);
 
-    return () => clearTimeout(timer);
-  }, []);
+  //   return () => clearTimeout(timer);
+  // }, []);
 
   // Rotate videos every 13 seconds
   useEffect(() => {
@@ -68,7 +68,7 @@ export default function HomePage() {
             muted
             playsInline
             loop
-            preload="metadata"
+            preload="auto"
             className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${
               index === currentVideoIndex ? "opacity-100" : "opacity-0"
             }`}
@@ -155,8 +155,8 @@ export default function HomePage() {
             </div>
           </div>
           <div className="rounded-[2rem] overflow-hidden bg-slate-900 text-white shadow-2xl ring-1 ring-white/10">
-            <div className="relative w-full aspect-[4/5] sm:aspect-[5/3] lg:aspect-[5/3] overflow-hidden rounded-2xl">
-              <div className="absolute inset-0 bg-[url('/brand_story.jpg')] bg-cover bg-center transition-transform duration-500 hover:scale-105" />
+            <div className="relative w-full aspect-[5/3] sm:aspect-[5/3] lg:aspect-[5/3] overflow-hidden rounded-2xl">
+              <div className="absolute inset-0 bg-[url('/brand_story.jpg')] bg-contain bg-center bg-no-repeat transition-transform duration-500 scale-105 hover:scale-110" />
             </div>
             <div className="p-10">
               <span className="text-sm uppercase tracking-[0.4em] text-amber-300">
@@ -195,7 +195,7 @@ export default function HomePage() {
           <h2 className="text-4xl font-light mt-2">Best Sellers</h2>
           <div className="w-20 h-0.5 bg-primary mx-auto mt-4" />
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
           {products.slice(0, 4).map((product) => (
             <ProductCard key={product.id} product={product} isAdmin={false} />
           ))}

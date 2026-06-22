@@ -40,7 +40,7 @@ export default function ShopPage() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search styles, fabrics, descriptions..."
-                  className="h-11 pl-11 pr-4 rounded-2xl bg-muted/30 border-none focus-visible:ring-1 focus-visible:ring-primary/40"
+                  className="h-11 pl-11 pr-4 rounded-2xl bg-muted/30 focus-visible:ring-1 focus-visible:ring-primary/40 border-none shadow-2xs"
                 />
               </div>
 
@@ -79,9 +79,9 @@ export default function ShopPage() {
           </div>
 
           {/* Mobile-only mini count */}
-          <div className="rounded-2xl border bg-background px-4 py-2 text-sm text-muted-foreground lg:hidden">
+          {/* <div className="rounded-2xl border bg-background px-4 py-2 text-sm text-muted-foreground lg:hidden">
             {filteredProducts.length} items
-          </div>
+          </div> */}
         </div>
       </section>
 
