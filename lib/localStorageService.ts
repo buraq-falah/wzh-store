@@ -10,7 +10,7 @@ const DEFAULT_PRODUCTS: Product[] = [
     name: 'Classic White T-Shirt',
     price: 29.99,
     description: 'Essential white tee, 100% cotton.',
-    category: 'Men',
+    categories: ['Men'],
     imageUrl: ['https://placehold.co/400x400?text=WZH'],
     details: { colors: ['White', 'Black'], sizes: ['S', 'M', 'L'] }
   },
@@ -20,7 +20,7 @@ const DEFAULT_PRODUCTS: Product[] = [
     name: 'Slim Fit Denim Jacket',
     price: 89.99,
     description: 'Classic denim jacket with a modern slim fit.',
-    category: 'Unisex',
+    categories: ['Unisex'],
     imageUrl: ['https://placehold.co/400x400?text=WZH'],
     details: { colors: ['Blue', 'Black'], sizes: ['M', 'L', 'XL'] }
   },
@@ -30,7 +30,7 @@ const DEFAULT_PRODUCTS: Product[] = [
     name: 'Athletic Hoodie',
     price: 59.99,
     description: 'Comfortable hoodie for workouts and casual days.',
-    category: 'Women',
+    categories: ['Women'],
     imageUrl: ['https://placehold.co/400x400?text=WZH'],
     details: { colors: ['Gray', 'Navy'], sizes: ['S', 'M', 'L', 'XL'] }
   }
