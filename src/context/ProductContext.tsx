@@ -127,13 +127,7 @@
 'use client';
 import React, { createContext, useContext, useEffect, useState, useRef } from 'react';
 import { Product } from '@/types/product';
-import { 
-  getProducts, 
-  saveProducts, 
-  addProduct as addProductToStorage, 
-  updateProduct as updateProductInStorage, 
-  deleteProduct as deleteProductFromStorage 
-} from '../../lib/localStorageService';
+import { getProducts, addProduct as addProductToDB, updateProduct as updateProductInDB, deleteProduct as deleteProductFromDB } from '../../lib/productService';
 import { toast } from 'sonner';
 
 interface ProductContextType {
@@ -151,11 +145,20 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   const isAddingRef = useRef(false);
 
-  const loadProducts = () => {
+  const loadProducts = async () => {
     setLoading(true);
-    const stored = getProducts();
-    setProducts(stored);
-    setLoading(false);
+    try {
+      const data = await getProducts();
+      // Ensure data is always an array
+      const items = Array.isArray(data) ? data : [];
+      setProducts(items);
+    } catch (error) {
+      console.error('Error loading products:', error);
+      toast.error('Failed to load products');
+      setProducts([]); // fallback to empty array
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -166,7 +169,7 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
     if (isAddingRef.current) return;
     isAddingRef.current = true;
     try {
-      const newProduct = addProductToStorage(productData);
+      const newProduct = await addProductToDB(productData);
       setProducts(prev => [...prev, newProduct]);
       toast.success('Product added');
     } catch (error) {
@@ -179,13 +182,9 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
 
   const updateProduct = async (documentId: string, productData: any) => {
     try {
-      const updated = updateProductInStorage(documentId, productData);
-      if (updated) {
-        setProducts(prev => prev.map(p => p.documentId === documentId ? updated : p));
-        toast.success('Product updated');
-      } else {
-        toast.error('Product not found');
-      }
+      const updated = await updateProductInDB(documentId, productData);
+      setProducts(prev => prev.map(p => p.documentId === documentId ? updated : p));
+      toast.success('Product updated');
     } catch (error) {
       console.error(error);
       toast.error('Failed to update product');
@@ -194,13 +193,9 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
 
   const deleteProduct = async (documentId: string) => {
     try {
-      const success = deleteProductFromStorage(documentId);
-      if (success) {
-        setProducts(prev => prev.filter(p => p.documentId !== documentId));
-        toast.success('Product deleted');
-      } else {
-        toast.error('Product not found');
-      }
+      await deleteProductFromDB(documentId);
+      setProducts(prev => prev.filter(p => p.documentId !== documentId));
+      toast.success('Product deleted');
     } catch (error) {
       console.error(error);
       toast.error('Failed to delete product');
