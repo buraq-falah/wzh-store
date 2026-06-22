@@ -7,8 +7,6 @@ const getAdminToken = () => {
   return localStorage.getItem('admin_auth');
 };
 
-// src/lib/productService.ts
-
 export const getProducts = async (): Promise<Product[]> => {
   try {
     const res = await fetch('/api/products', {
@@ -22,7 +20,6 @@ export const getProducts = async (): Promise<Product[]> => {
       throw new Error(err.error || 'Failed to fetch products');
     }
     const data = await res.json();
-    // تأكد من أن البيانات مصفوفة
     if (!Array.isArray(data)) {
       console.warn('API did not return an array, returning empty');
       return [];
@@ -33,7 +30,7 @@ export const getProducts = async (): Promise<Product[]> => {
       name: row.name,
       price: row.price,
       description: row.description,
-      categoriess: row.categories || [],
+      categories: row.categories || [],   // ✅ fixed typo
       imageUrl: row.image_url || [],
       details: row.details || {},
     }));
@@ -43,15 +40,14 @@ export const getProducts = async (): Promise<Product[]> => {
   }
 };
 
-// POST – uses API route with admin token
 export const addProduct = async (product: Omit<Product, 'id' | 'documentId'>): Promise<Product> => {
   const res = await fetch('/api/products', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${getAdminToken()}`
+      Authorization: `Bearer ${getAdminToken()}`,
     },
-    body: JSON.stringify(product)
+    body: JSON.stringify(product),
   });
   if (!res.ok) {
     const err = await res.json();
@@ -66,7 +62,7 @@ export const addProduct = async (product: Omit<Product, 'id' | 'documentId'>): P
     description: data.description,
     categories: data.categories || [],
     imageUrl: data.image_url || [],
-    details: data.details || {}
+    details: data.details || {},
   };
 };
 
@@ -75,9 +71,9 @@ export const updateProduct = async (documentId: string, updatedData: Partial<Pro
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${getAdminToken()}`
+      Authorization: `Bearer ${getAdminToken()}`,
     },
-    body: JSON.stringify({ documentId, ...updatedData })
+    body: JSON.stringify({ documentId, ...updatedData }),
   });
   if (!res.ok) {
     const err = await res.json();
@@ -92,7 +88,7 @@ export const updateProduct = async (documentId: string, updatedData: Partial<Pro
     description: data.description,
     categories: data.categories || [],
     imageUrl: data.image_url || [],
-    details: data.details || {}
+    details: data.details || {},
   };
 };
 
@@ -100,8 +96,8 @@ export const deleteProduct = async (documentId: string): Promise<void> => {
   const res = await fetch(`/api/products?documentId=${documentId}`, {
     method: 'DELETE',
     headers: {
-      Authorization: `Bearer ${getAdminToken()}`
-    }
+      Authorization: `Bearer ${getAdminToken()}`,
+    },
   });
   if (!res.ok) {
     const err = await res.json();
