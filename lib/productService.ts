@@ -7,26 +7,40 @@ const getAdminToken = () => {
   return localStorage.getItem('admin_auth');
 };
 
-// GET – still uses Supabase directly (public read)
+// src/lib/productService.ts
+
 export const getProducts = async (): Promise<Product[]> => {
-  const { data, error } = await supabase
-    .from('products')
-    .select('*')
-    .order('id', { ascending: true });
-  if (error) {
-    console.error('Supabase error:', error);
+  try {
+    const res = await fetch('/api/products', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Failed to fetch products');
+    }
+    const data = await res.json();
+    // تأكد من أن البيانات مصفوفة
+    if (!Array.isArray(data)) {
+      console.warn('API did not return an array, returning empty');
+      return [];
+    }
+    return data.map((row: any) => ({
+      id: row.id,
+      documentId: row.document_id,
+      name: row.name,
+      price: row.price,
+      description: row.description,
+      category: row.category,
+      imageUrl: row.image_url || [],
+      details: row.details || {},
+    }));
+  } catch (error) {
+    console.error('Error fetching products from API:', error);
     return [];
   }
-  return (data || []).map(row => ({
-    id: row.id,
-    documentId: row.document_id,
-    name: row.name,
-    price: row.price,
-    description: row.description,
-    category: row.category,
-    imageUrl: row.image_url || [],
-    details: row.details || {}
-  }));
 };
 
 // POST – uses API route with admin token

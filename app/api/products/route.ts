@@ -13,13 +13,17 @@ function isAdmin(request: NextRequest): boolean {
   return token === 'true'; // because we store 'true' in localStorage after login
 }
 
-// GET – public read (or we can keep using direct client)
 export async function GET() {
+  console.log('API GET /api/products called');
   const { data, error } = await supabaseAdmin
     .from('products')
     .select('*')
     .order('id', { ascending: true });
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) {
+    console.error('Supabase error in GET:', error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+  console.log('Returning products:', data?.length);
   return NextResponse.json(data);
 }
 
