@@ -116,6 +116,7 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
@@ -133,13 +134,12 @@ export default function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    // Simulate async validation
     const success = login(email, password);
     if (success) {
-      toast.success('Logged in successfully');
-      router.replace('/admin');
+      toast.success('Logged in');
+      setTimeout(() => router.replace('/admin'), 200);
     } else {
-      toast.error('Invalid email or password');
+      toast.error('Invalid credentials');
     }
     setLoading(false);
   };
@@ -183,6 +183,15 @@ export default function LoginPage() {
               {loading ? 'Signing in...' : 'Sign In'}
             </Button>
           </form>
+
+          {/* ✅ Back to Home button */}
+          <div className="mt-6 text-center">
+            <Link href="/" passHref>
+              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-primary">
+                ← Back to Home
+              </Button>
+            </Link>
+          </div>
         </CardContent>
       </Card>
     </div>

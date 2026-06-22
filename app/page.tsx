@@ -8,21 +8,41 @@ import { Footer } from "../components/Footer";
 
 export default function HomePage() {
   const { products, loading } = useProducts();
+
+  // ✅ State for video index and loading status
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
+  const [loadedVideos, setLoadedVideos] = useState<boolean[]>([
+    false,
+    false,
+    false,
+  ]); // ✅ declare this!
 
   const videos = ["/videos/hat.mp4", "/videos/tshirt.mp4", "/videos/DIP.mp4"];
-
   const videoRefs = videos.map(() => useRef<HTMLVideoElement>(null));
 
+  // Preload videos progressively
   useEffect(() => {
-    videoRefs.forEach((ref) => {
-      if (ref.current) {
-        ref.current.currentTime = 0;
-        ref.current.play().catch(() => {});
+    // Load first video immediately
+    if (videoRefs[0]?.current) {
+      videoRefs[0].current.load();
+      videoRefs[0].current.play().catch(() => {});
+    }
+
+    // Load remaining videos after 3 seconds
+    const timer = setTimeout(() => {
+      for (let i = 1; i < videoRefs.length; i++) {
+        if (videoRefs[i]?.current) {
+          videoRefs[i].current.load();
+          videoRefs[i].current.play().catch(() => {});
+        }
       }
-    });
+      setLoadedVideos(videos.map(() => true)); // ✅ now this works
+    }, 3000);
+
+    return () => clearTimeout(timer);
   }, []);
 
+  // Rotate videos every 13 seconds
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentVideoIndex((prev) => (prev + 1) % videos.length);
@@ -30,15 +50,15 @@ export default function HomePage() {
     return () => clearInterval(interval);
   }, [videos.length]);
 
-  if (loading)
+  if (loading) {
     return (
       <div className="flex justify-center items-center h-64">Loading...</div>
     );
+  }
 
   return (
     <>
       <section className="relative h-[95vh] min-h-[520px] flex items-center justify-center overflow-hidden bg-black">
-        {/* Video background */}
         {videos.map((video, index) => (
           <video
             ref={videoRefs[index]}
@@ -46,15 +66,13 @@ export default function HomePage() {
             autoPlay
             muted
             playsInline
-            loop={true}
-            preload="auto"
-            className={`absolute inset-0 top-0 left-0 w-full h-full min-w-full min-h-full block object-cover object-center border-none m-0 p-0 will-change-transform transition-opacity duration-1000 ${
+            loop
+            preload="metadata"
+            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${
               index === currentVideoIndex ? "opacity-100" : "opacity-0"
             }`}
-            style={{ transform: "scale(1)" }}
           >
-            <source src={video} type="video/quicktime" />
-            <source src={video.replace(".mov", ".mp4")} type="video/mp4" />
+            <source src={video} type="video/mp4" />
           </video>
         ))}
 
@@ -72,7 +90,7 @@ export default function HomePage() {
             highlight coveted accessories, and elevate every moment.
           </p>
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-             <Link href="/shop">
+            <Link href="/shop">
               <Button
                 size="lg"
                 className="rounded-full border cursor-pointer border-white bg-white text-red-500 px-8 shadow-xl hover:bg-red-500 hover:text-white transition-all duration-300"
@@ -89,7 +107,6 @@ export default function HomePage() {
                 Explore Accessories
               </Button>
             </Link>
-           
           </div>
         </div>
       </section>
@@ -194,7 +211,6 @@ export default function HomePage() {
           </Link>
         </div>
       </section>
-
     </>
   );
 }
