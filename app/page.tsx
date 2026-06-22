@@ -31,12 +31,13 @@ export default function HomePage() {
     // Load remaining videos after 3 seconds
     const timer = setTimeout(() => {
       for (let i = 1; i < videoRefs.length; i++) {
-        if (videoRefs[i]?.current) {
-          videoRefs[i].current.load();
-          videoRefs[i].current.play().catch(() => {});
+        const video = videoRefs[i]?.current;
+        if (video) {
+          video.load();
+          video.play().catch(() => {});
         }
       }
-      setLoadedVideos(videos.map(() => true)); // ✅ now this works
+      setLoadedVideos(videos.map(() => true));
     }, 3000);
 
     return () => clearTimeout(timer);
