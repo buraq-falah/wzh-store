@@ -22,7 +22,7 @@ export default function ShopPage() {
   });
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="container mx-auto px-4 py-8">
       {/* FILTER + SEARCH */}
       <section className="sticky top-0 z-10 bg-background/80 backdrop-blur ">
         <div className="container mx-auto px-4 py-4">
