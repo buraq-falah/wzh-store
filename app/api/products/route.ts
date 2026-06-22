@@ -33,14 +33,14 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
   const body = await request.json();
-  const { name, price, description, category, imageUrl, details } = body;
+  const { name, price, description, categories, imageUrl, details } = body;
 
   const newProduct = {
     document_id: `local_${Date.now()}`,
     name,
     price,
     description,
-    category,
+    categories: categories || [],
     image_url: imageUrl || [],
     details: details || {},
   };
@@ -66,7 +66,7 @@ export async function PUT(request: NextRequest) {
   if (updatedData.name) dbUpdate.name = updatedData.name;
   if (updatedData.price !== undefined) dbUpdate.price = updatedData.price;
   if (updatedData.description) dbUpdate.description = updatedData.description;
-  if (updatedData.category) dbUpdate.category = updatedData.category;
+  if (updatedData.categories) dbUpdate.categories = updatedData.categories;
   if (updatedData.imageUrl) dbUpdate.image_url = updatedData.imageUrl;
   if (updatedData.details) dbUpdate.details = updatedData.details;
 

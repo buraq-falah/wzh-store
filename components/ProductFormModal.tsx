@@ -13,20 +13,12 @@ import { Label } from "../components/ui/label";
 import { Textarea } from "../components/ui/textarea";
 
 import { MultiSelect } from "../components/ui/multi-select";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../components/ui/select";
 import { CldUploadWidget } from "next-cloudinary";
 import type { CloudinaryUploadWidgetInfo } from "next-cloudinary";
 import { Product, ProductDetails } from "@/types/product";
 import { X, Upload } from "lucide-react";
 import { Combobox } from "../components/ui/combobox";
 
-const categories = ["Unisex", "Men", "Women", "Accessories", "Hats", "Sports"];
 
 interface ProductFormModalProps {
   open: boolean;
@@ -45,7 +37,7 @@ export function ProductFormModal({
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
   const [description, setDescription] = useState("");
-  const [category, setCategory] = useState("");
+  const [categories, setCategories] = useState<string[]>([]);
   const [existingImages, setExistingImages] = useState<string[]>([]);
   const [uploadedImageUrls, setUploadedImageUrls] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
@@ -124,7 +116,7 @@ export function ProductFormModal({
         setName(product.name);
         setPrice(String(product.price));
         setDescription(product.description);
-        setCategory(product.category);
+        setCategories(product.categories || []); // assuming multiple categories
         setExistingImages(product.imageUrl || []);
         if (product.details) {
           setDetails({
@@ -166,7 +158,7 @@ export function ProductFormModal({
         setName("");
         setPrice("");
         setDescription("");
-        setCategory("");
+        setCategories([]);
         setExistingImages([]);
         setUploadedImageUrls([]);
         setDetails({
@@ -206,7 +198,7 @@ export function ProductFormModal({
     if (!price || parseFloat(price) <= 0)
       newErrors.price = "Valid price required";
     if (!description.trim()) newErrors.description = "Description required";
-    if (!category) newErrors.category = "Category required";
+    if (!categories.length) newErrors.categories = "At least one category required";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -222,7 +214,7 @@ export function ProductFormModal({
         name: name.trim(),
         price: parseFloat(price),
         description: description.trim(),
-        category,
+        categories: categories,
         details: {
           fit: details.fit,
           fabric: details.fabric,
@@ -323,26 +315,21 @@ export function ProductFormModal({
                 )}
               </div>
               <div className="space-y-2">
-                <Label>Category</Label>
-                <Select
-                  value={category}
-                  onValueChange={setCategory}
-                  disabled={loading}
-                >
-                  <SelectTrigger className="cursor-pointer" >
-                    <SelectValue placeholder="Select category" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white ">
-                    {categories.map((c) => (
-                      <SelectItem key={c} value={c} className=" hover:bg-gray-100 cursor-pointer">
-                        {c}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {errors.category && (
-                  <p className="text-sm text-red-500">{errors.category}</p>
-                )}
+                <Label>Categories</Label>
+                <MultiSelect
+                  options={[
+                    "Men",
+                    "Women",
+                    "Unisex",
+                    "Accessories",
+                    "Hats",
+                    "Sports",
+                  ]}
+                  value={categories || []}
+                  onChange={(selected) => setCategories(selected)}
+                  placeholder="Select or add categories"
+                  creatable={true}
+                />
               </div>
             </div>
 

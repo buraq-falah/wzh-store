@@ -30,7 +30,7 @@ export interface Product {
   name: string;
   price: number;
   description: string;   // short description (plain text)
-  category: string;
+  categories: string[];
   imageUrl: string[];
   details?: ProductDetails;  // new JSON field
 }
@@ -41,7 +41,7 @@ export interface StrapiProduct {
     name: string;
     price: number;
     imageUrl: string[];
-    category: string;
+    category: string[];
     description: string;
     createdAt: string;
     updatedAt: string;

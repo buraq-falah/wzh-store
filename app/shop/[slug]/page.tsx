@@ -13,7 +13,7 @@ export default function CategoryPage() {
   const [searchQuery, setSearchQuery] = useState("");
 
   // First filter by category
-  const categoryProducts = products.filter(p => p.category === slug);
+  const categoryProducts = products.filter(p => p.categories && p.categories.includes(slug));
   
   // Then filter by search query (name or description)
   const filteredProducts = categoryProducts.filter((product) => {

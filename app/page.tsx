@@ -3,79 +3,34 @@ import { useProducts } from "@/context/ProductContext";
 import { ProductCard } from "../components/ProductCard";
 import { Button } from "../components/ui/button";
 import Link from "next/link";
-import { useState, useEffect, useRef } from "react";
-import { Footer } from "../components/Footer";
+import { useState, useEffect } from "react";
 
 export default function HomePage() {
   const { products, loading } = useProducts();
 
-  // ✅ State for video index and loading status
-  const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
-  const [loadedVideos, setLoadedVideos] = useState<boolean[]>([
-    false,
-    false,
-    false,
-  ]); // ✅ declare this!
-
-  const videos = ["/videos/hat.mp4", "/videos/tshirt.mp4", "/videos/DIP.mp4"];
-  const videoRefs = videos.map(() => useRef<HTMLVideoElement>(null));
-
-  // // Preload videos progressively
-  // useEffect(() => {
-  //   // Load first video immediately
-  //   if (videoRefs[0]?.current) {
-  //     videoRefs[0].current.load();
-  //     videoRefs[0].current.play().catch(() => {});
-  //   }
-
-  //   // Load remaining videos after 3 seconds
-  //   const timer = setTimeout(() => {
-  //     for (let i = 1; i < videoRefs.length; i++) {
-  //       const video = videoRefs[i]?.current;
-  //       if (video) {
-  //         video.load();
-  //         video.play().catch(() => {});
-  //       }
-  //     }
-  //     setLoadedVideos(videos.map(() => true));
-  //   }, 3000);
-
-  //   return () => clearTimeout(timer);
-  // }, []);
-
-  // Rotate videos every 13 seconds
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentVideoIndex((prev) => (prev + 1) % videos.length);
-    }, 13000);
-    return () => clearInterval(interval);
-  }, [videos.length]);
+  // Single video URL (Cloudinary recommended)
+  const heroVideo =
+    "https://res.cloudinary.com/dbqwxuyvu/video/upload/v1782133895/Full_video_htg98x.mp4";
+  // Fallback local path (if you want to keep it local)
+  // const heroVideo = "/videos/hero.mp4";
 
   if (loading) {
-    return (
-      <div className="flex justify-center items-center h-64">Loading...</div>
-    );
+    return <div className="flex justify-center items-center h-64">Loading...</div>;
   }
 
   return (
     <>
       <section className="relative h-[95vh] min-h-[520px] flex items-center justify-center overflow-hidden bg-black">
-        {videos.map((video, index) => (
-          <video
-            ref={videoRefs[index]}
-            key={index}
-            autoPlay
-            muted
-            playsInline
-            loop
-            preload="auto"
-            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${
-              index === currentVideoIndex ? "opacity-100" : "opacity-0"
-            }`}
-          >
-            <source src={video} type="video/mp4" />
-          </video>
-        ))}
+        <video
+          autoPlay
+          muted
+          playsInline
+          loop
+          preload="metadata"
+          className="absolute inset-0 w-full h-full object-cover"
+        >
+          <source src={heroVideo} type="video/mp4" />
+        </video>
 
         <div className="absolute inset-0 bg-black/60 z-10" />
         <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(19,19,19,0.5),rgba(7,7,7,0.3))] z-10" />

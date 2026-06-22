@@ -80,7 +80,7 @@ export function ProductCard({
               </h3>
 
               <p className="text-sm text-muted-foreground capitalize">
-                {product.category}
+                {product.categories?.join(", ") || "Uncategorized"}
               </p>
             </div>
 

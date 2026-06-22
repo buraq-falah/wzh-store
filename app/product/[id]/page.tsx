@@ -23,7 +23,8 @@ export default function ProductDetailPage() {
   const [modalOpen, setModalOpen] = useState(false);
 
   if (loading) return <div className="text-center py-12">Loading...</div>;
-  if (!product) return <div className="text-center py-12">Product not found</div>;
+  if (!product)
+    return <div className="text-center py-12">Product not found</div>;
 
   const images = product.imageUrl || [];
   const details = product.details || {};
@@ -31,7 +32,8 @@ export default function ProductDetailPage() {
   const scrollPrev = () => emblaApi?.scrollPrev();
   const scrollNext = () => emblaApi?.scrollNext();
 
-  const renderArray = (arr?: string[]) => (arr && arr.length ? arr.join(", ") : null);
+  const renderArray = (arr?: string[]) =>
+    arr && arr.length ? arr.join(", ") : null;
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-6xl">
@@ -42,7 +44,10 @@ export default function ProductDetailPage() {
             <div className="embla" ref={emblaRef}>
               <div className="embla__container flex">
                 {images.map((imgUrl, idx) => (
-                  <div key={idx} className="embla__slide min-w-0 flex-[0_0_100%]">
+                  <div
+                    key={idx}
+                    className="embla__slide min-w-0 flex-[0_0_100%]"
+                  >
                     <img
                       src={imgUrl}
                       alt={`${product.name} - ${idx + 1}`}
@@ -81,7 +86,9 @@ export default function ProductDetailPage() {
                   src={imgUrl}
                   alt={`thumb ${idx}`}
                   className={`w-20 h-20 object-cover rounded-md cursor-pointer border-2 ${
-                    idx === selectedIndex ? "border-primary" : "border-transparent"
+                    idx === selectedIndex
+                      ? "border-primary"
+                      : "border-transparent"
                   }`}
                   onClick={() => {
                     setSelectedIndex(idx);
@@ -96,8 +103,12 @@ export default function ProductDetailPage() {
         {/* Right: Product Details */}
         <div className="space-y-6">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">{product.name}</h1>
-            <p className="text-muted-foreground capitalize mt-1">{product.category}</p>
+            <h1 className="text-3xl font-bold tracking-tight">
+              {product.name}
+            </h1>
+            <p className="text-muted-foreground capitalize mt-1">
+              {product.categories?.join(", ")}
+            </p>
             <p className="text-3xl font-bold text-primary mt-4">
               ${product.price.toFixed(2)}
             </p>
@@ -105,12 +116,15 @@ export default function ProductDetailPage() {
 
           {product.details?.totalSales && (
             <div className="flex items-center gap-2 text-sm text-muted-foreground mt-2">
-              <span className="font-medium">✅ Sold:</span> {product.details.totalSales} pieces
+              <span className="font-medium">✅ Sold:</span>{" "}
+              {product.details.totalSales} pieces
             </div>
           )}
 
           <div className="prose max-w-none">
-            <p className="text-gray-600 dark:text-gray-300">{product.description}</p>
+            <p className="text-gray-600 dark:text-gray-300">
+              {product.description}
+            </p>
           </div>
 
           {/* Specifications Table (unchanged) */}
@@ -130,7 +144,9 @@ export default function ProductDetailPage() {
               <dl className="grid grid-cols-2 gap-3 text-sm">
                 {details.colors && details.colors.length > 0 && (
                   <>
-                    <dt className="font-medium text-muted-foreground">Colors</dt>
+                    <dt className="font-medium text-muted-foreground">
+                      Colors
+                    </dt>
                     <dd>{details.colors.join(", ")}</dd>
                   </>
                 )}
@@ -140,16 +156,74 @@ export default function ProductDetailPage() {
                     <dd>{details.sizes.join(", ")}</dd>
                   </>
                 )}
-                {details.fit && <><dt className="font-medium text-muted-foreground">Fit</dt><dd>{details.fit}</dd></>}
-                {details.fabric && <><dt className="font-medium text-muted-foreground">Fabric</dt><dd>{details.fabric}</dd></>}
-                {details.neckline && <><dt className="font-medium text-muted-foreground">Neckline</dt><dd>{details.neckline}</dd></>}
-                {details.sleeve && <><dt className="font-medium text-muted-foreground">Sleeve</dt><dd>{details.sleeve}</dd></>}
-                {details.pattern && <><dt className="font-medium text-muted-foreground">Pattern</dt><dd>{details.pattern}</dd></>}
-                {details.style && <><dt className="font-medium text-muted-foreground">Style</dt><dd>{renderArray(details.style)}</dd></>}
-                {details.season && <><dt className="font-medium text-muted-foreground">Season</dt><dd>{details.season}</dd></>}
-                {details.audience && <><dt className="font-medium text-muted-foreground">Audience</dt><dd>{renderArray(details.audience)}</dd></>}
-                {details.scenarios && <><dt className="font-medium text-muted-foreground">Best for</dt><dd>{renderArray(details.scenarios)}</dd></>}
-                
+                {details.fit && (
+                  <>
+                    <dt className="font-medium text-muted-foreground">Fit</dt>
+                    <dd>{details.fit}</dd>
+                  </>
+                )}
+                {details.fabric && (
+                  <>
+                    <dt className="font-medium text-muted-foreground">
+                      Fabric
+                    </dt>
+                    <dd>{details.fabric}</dd>
+                  </>
+                )}
+                {details.neckline && (
+                  <>
+                    <dt className="font-medium text-muted-foreground">
+                      Neckline
+                    </dt>
+                    <dd>{details.neckline}</dd>
+                  </>
+                )}
+                {details.sleeve && (
+                  <>
+                    <dt className="font-medium text-muted-foreground">
+                      Sleeve
+                    </dt>
+                    <dd>{details.sleeve}</dd>
+                  </>
+                )}
+                {details.pattern && (
+                  <>
+                    <dt className="font-medium text-muted-foreground">
+                      Pattern
+                    </dt>
+                    <dd>{details.pattern}</dd>
+                  </>
+                )}
+                {details.style && (
+                  <>
+                    <dt className="font-medium text-muted-foreground">Style</dt>
+                    <dd>{renderArray(details.style)}</dd>
+                  </>
+                )}
+                {details.season && (
+                  <>
+                    <dt className="font-medium text-muted-foreground">
+                      Season
+                    </dt>
+                    <dd>{details.season}</dd>
+                  </>
+                )}
+                {details.audience && (
+                  <>
+                    <dt className="font-medium text-muted-foreground">
+                      Audience
+                    </dt>
+                    <dd>{renderArray(details.audience)}</dd>
+                  </>
+                )}
+                {details.scenarios && (
+                  <>
+                    <dt className="font-medium text-muted-foreground">
+                      Best for
+                    </dt>
+                    <dd>{renderArray(details.scenarios)}</dd>
+                  </>
+                )}
               </dl>
             </div>
           )}
@@ -159,7 +233,9 @@ export default function ProductDetailPage() {
               <Truck className="w-5 h-5 text-primary shrink-0 mt-0.5" />
               <div>
                 <h3 className="font-semibold text-sm">📦 Shipping & Returns</h3>
-                <p className="text-sm text-muted-foreground">{details.logistics}</p>
+                <p className="text-sm text-muted-foreground">
+                  {details.logistics}
+                </p>
               </div>
             </div>
           )}
@@ -170,7 +246,8 @@ export default function ProductDetailPage() {
             </div>
           )}
 
-          {(details.totalSales !== undefined || details.storeTotalSales !== undefined) && (
+          {(details.totalSales !== undefined ||
+            details.storeTotalSales !== undefined) && (
             <div className="flex gap-6 text-sm text-muted-foreground border-t pt-6">
               {details.totalSales !== undefined && (
                 <div className="flex items-center gap-2">

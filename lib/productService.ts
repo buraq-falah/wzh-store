@@ -33,7 +33,7 @@ export const getProducts = async (): Promise<Product[]> => {
       name: row.name,
       price: row.price,
       description: row.description,
-      category: row.category,
+      categoriess: row.categories || [],
       imageUrl: row.image_url || [],
       details: row.details || {},
     }));
@@ -64,7 +64,7 @@ export const addProduct = async (product: Omit<Product, 'id' | 'documentId'>): P
     name: data.name,
     price: data.price,
     description: data.description,
-    category: data.category,
+    categories: data.categories || [],
     imageUrl: data.image_url || [],
     details: data.details || {}
   };
@@ -90,7 +90,7 @@ export const updateProduct = async (documentId: string, updatedData: Partial<Pro
     name: data.name,
     price: data.price,
     description: data.description,
-    category: data.category,
+    categories: data.categories || [],
     imageUrl: data.image_url || [],
     details: data.details || {}
   };
